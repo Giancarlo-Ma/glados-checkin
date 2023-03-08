@@ -1,0 +1,30 @@
+name: GLaDOS-auto-checkin
+
+on:
+  schedule:
+    - cron: "6 3 * * *"
+
+  push:
+    branches: ["main"]
+
+jobs:
+  GLaDOS-CheckIn:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: install dependency
+        run: yarn
+      - run: yarn build-ts
+      - name: checkin
+        env:
+          cookie: ${{ secrets.GLADOS_COOKIE }} # cookie
+          dingdingWebhookAddress: ${{ secrets.DINGDING_HOOK }}
+        run: node ./dist/index
